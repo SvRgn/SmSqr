@@ -4,7 +4,7 @@ import statistics
 import os
 import json
 import argparse
-import lda_tm_sklearn
+import lda_tm
 from itertools import groupby
 from operator import itemgetter
 
