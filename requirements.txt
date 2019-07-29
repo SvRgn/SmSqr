@@ -17,7 +17,6 @@ cmake==3.13.3
 colorama==0.4.1
 common==0.1.2
 crayons==0.2.0
-cryptography==2.2.2
 cssselect==1.0.3
 cycler==0.10.0
 cymem==2.0.2
@@ -48,7 +47,6 @@ ijson==2.3
 imageio==2.5.0
 imutils==0.5.2
 iso639==0.1.4
-Jinja2==2.10
 jmespath==0.9.3
 joblib==0.13.2
 jsonschema==2.6.0
