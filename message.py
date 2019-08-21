@@ -191,7 +191,6 @@ class Message:
         self.entities = None
         self.topic = None
         self.clusterable_words = None
-        self.cluster = None
         self.hashtags = None
         self.emoticons = None
         self.activities = None
