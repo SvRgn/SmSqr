@@ -158,7 +158,7 @@ def train_topic_model(wordcloud_path, number_topics, model_path, preprocessed_pa
     save_word_cloud_json(var1, file)
     display_word_cloud(number_topics, wordcloud_file, wordcloud_json)
     save_train_topic_to_json(model, dtm_tf, preprocessed_path, statistic_topics_json, expert_terms, wordcloud_path)
-    vis = pyLDAvis.sklearn.prepare(lda_model, dtm_tf, tf_vectorizer)
+    vis = pyLDAvis.sklearn.prepare(lda_model, dtm_tf, tf_vectorizer, sort_topics=False)
     pyLDAvis.save_html(vis, 'output/LDA_Visualization_sklearn.html')
 
 
