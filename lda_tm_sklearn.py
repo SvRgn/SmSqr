@@ -134,7 +134,7 @@ def train_topic_model(wordcloud_path, number_topics, model_path, preprocessed_pa
                                         min_df=10)
         dtm_tf = tf_vectorizer.fit_transform(new_data)
         vocab = tf_vectorizer.get_feature_names()
-        print(dtm_tf.shape)
+        #print(dtm_tf.shape)
         lda_model = LatentDirichletAllocation(n_topics=number_topics, random_state=0)
         lda_model.fit(dtm_tf)
     else:
@@ -148,7 +148,7 @@ def train_topic_model(wordcloud_path, number_topics, model_path, preprocessed_pa
         tf_vectorizer = TfidfVectorizer(**tf_vectorizer_init.get_params())
         dtm_tf = tf_vectorizer.fit_transform(new_data)
         vocab = tf_vectorizer.get_feature_names()
-        print(dtm_tf.shape)
+        #print(dtm_tf.shape)
         lda_model = LatentDirichletAllocation(n_topics=number_topics, random_state=0)
         lda_model.fit(dtm_tf)
 
@@ -157,12 +157,12 @@ def train_topic_model(wordcloud_path, number_topics, model_path, preprocessed_pa
     prepare_topic_distribution(model, place_holder_list, stem_lemma_dict, vocab)
     save_word_cloud_json(var1, file)
     display_word_cloud(number_topics, wordcloud_file, wordcloud_json)
-    save_train_topic_to_json(model, dtm_tf, preprocessed_path, statistic_topics_json, expert_terms)
+    save_train_topic_to_json(model, dtm_tf, preprocessed_path, statistic_topics_json, expert_terms, wordcloud_path)
     vis = pyLDAvis.sklearn.prepare(lda_model, dtm_tf, tf_vectorizer)
     pyLDAvis.save_html(vis, 'output/LDA_Visualization_sklearn.html')
 
 
-def test_topic_model(model_path, query_words, filename, out, preprocessed, test_data, expert_terms):
+def test_topic_model(model_path, query_words, filename, out, preprocessed, test_data, expert_terms, wordcloud_path):
     # Loading a pretrained model
     infile = filename
     outfile, statistic_test_topics_json = prepare_infrastructure.prepare_file_names_test(filename, out, test_data)
@@ -194,7 +194,7 @@ def test_topic_model(model_path, query_words, filename, out, preprocessed, test_
     # tf_vectorizer = TfidfVectorizer(**tf_vectorizer.get_params())  # uncomment if tfidf to be used
     dtm_tf = tf_vectorizer.fit_transform(new_texts)
     model.fit(dtm_tf)
-    save_test_topic_to_json(model, dtm_tf, preprocessed, statistic_test_topics_json, expert_terms)
+    save_test_topic_to_json(model, dtm_tf, preprocessed, statistic_test_topics_json, expert_terms, wordcloud_path)
 
 
 def prepare_topic_distribution(model, place_holder_list, stem_lemma_dict, vocab):
@@ -206,12 +206,12 @@ def prepare_topic_distribution(model, place_holder_list, stem_lemma_dict, vocab)
     for topic, words in topic_words.items():
         word_cloud = {}
         key_word_name = "name"
-        key_value_name = 'topic ' + str(topic)
+        key_value_name = 'topic ' + str(topic+1)
         key_word_children = "children"
         key_value_children = []
         word_cloud[key_word_name] = key_value_name
         word_cloud[key_word_children] = key_value_children
-        print(topic)
+        print(topic+1)
         for x in range(0, n_top_words):
             child_key_word_name = "name"
             try:
@@ -260,7 +260,7 @@ def display_word_cloud(number_topics, wordcloud_file, wordcloud_json):
         fig.savefig(wordcloud_file)
 
 
-def save_train_topic_to_json(model, dtm_tf, preprocessed_path, statistic_topics_json, expert_terms):
+def save_train_topic_to_json(model, dtm_tf, preprocessed_path, statistic_topics_json, expert_terms, wordcloud_path):
     # Load json content obtained from Message class
     with open(preprocessed_path, 'r', encoding='utf8') as data_file:
         pre_processed_data = json.load(data_file)
@@ -271,16 +271,16 @@ def save_train_topic_to_json(model, dtm_tf, preprocessed_path, statistic_topics_
     doc_topic = model.transform(dtm_tf)
     for json_tweet in pre_processed_data['Messages']:
         if topic_input_lines[idx] == '\n':
-            json_tweet["topic"] = 'NO TOPIC'  # assigns topic '0' to tweet with no clusterable words left after cleaning
+            json_tweet["topic"] = 'NO TOPIC'
         else:
             json_tweet["topic"] = str(doc_topic[idx].argmax()+1)
         idx += 1
     jsonFile.write(json.dumps(pre_processed_data, ensure_ascii=False, indent=4, sort_keys=True) + '\n\n')
     jsonFile.close()
-    create_statistic_for_topic(preprocessed_path, statistic_topics_json, expert_terms)
+    create_statistic_for_topic(preprocessed_path, statistic_topics_json, expert_terms, wordcloud_path)
 
 
-def save_test_topic_to_json(model, dtm_tf, preprocessed, statistic_test_topics_json, expert_terms):
+def save_test_topic_to_json(model, dtm_tf, preprocessed, statistic_test_topics_json, expert_terms, wordcloud_path):
     # Load json content obtained from Message class
     with open(preprocessed, 'r', encoding='utf8') as data_file:
         pre_processed_data = json.load(data_file)
@@ -297,10 +297,10 @@ def save_test_topic_to_json(model, dtm_tf, preprocessed, statistic_test_topics_j
         idx += 1
     jsonFile.write(json.dumps(pre_processed_data, ensure_ascii=False, indent=4, sort_keys=True) + '\n\n')
     jsonFile.close()
-    create_statistic_for_topic(preprocessed, statistic_test_topics_json, expert_terms)
+    create_statistic_for_topic(preprocessed, statistic_test_topics_json, expert_terms, wordcloud_path)
 
 
-def create_statistic_for_topic(preprocessed_path, file, expert_terms):
+def create_statistic_for_topic(preprocessed_path, file, expert_terms, wordcloud_path):
     topic_file_parent = {'Statistics_for_Topic': []}
     topic_place_holder_list = topic_file_parent.get('Statistics_for_Topic')
 
@@ -312,8 +312,18 @@ def create_statistic_for_topic(preprocessed_path, file, expert_terms):
         pre_processed_data = json.load(data_file)
         newStatistic = statistics.Statistics(expert_terms, 'complete')
 
+    with open(wordcloud_path, 'r', encoding='utf8') as wordcloud_file:
+        wordcloud_json = json.load(wordcloud_file)
+
     for t, k in groupby(sorted(pre_processed_data.get('Messages'), key=itemgetter('topic')), key=itemgetter('topic')):
         sub_parent = {'Messages': []}
+        topic_list = wordcloud_json['children']
+
+        for item in topic_list:
+            if item['name'] == str('topic ' + t):
+                topic_sub_parent = item
+                break
+
         for m in k:
             place_holder_list = sub_parent.get('Messages')
             place_holder_list.append(m)
@@ -329,6 +339,7 @@ def create_statistic_for_topic(preprocessed_path, file, expert_terms):
         language = newStatistic.get_language_of_messages(sub_parent)
         phrases = newStatistic.get_phrases(sub_parent)
         pos_tags = newStatistic.get_pos(sub_parent)
+        clusterable_words = newStatistic.get_clusterable_words(topic_sub_parent)
 
         topicDict = {
             'topic': str(t),
@@ -347,8 +358,11 @@ def create_statistic_for_topic(preprocessed_path, file, expert_terms):
             'text_length': length,
             'languages_in_topic': language,
             'phrases_in_period': phrases,
-            'most_common_part_of_speech': pos_tags
+            'most_common_part_of_speech': pos_tags,
+            'topic_keywords': clusterable_words
         }
+        if topicDict['topic'] == 'NO TOPIC':
+            topicDict['topic_keywords'] = None
         topic_place_holder_list.append(topicDict)
 
     topic_json = json.dumps(topic_file_parent)

@@ -1,6 +1,7 @@
 import uuid
 from collections import Counter
 from datetime import datetime, date
+import json
 
 
 def get_date(datestring):
@@ -32,6 +33,7 @@ class Statistics:
         self.topics = None
         self.phrases = None
         self.pos = None
+        self.topic_keywords = None
 
     def prepare_period(self, parent):
         for a in parent.get("Messages"):
@@ -61,8 +63,6 @@ class Statistics:
                 d = {'period': dt}
             a.update(d)
         return(parent)
-
-
 
     def get_number_of_messages(self, sub_parent):
         self.number_of_messages = len(sub_parent.get('Messages'))
@@ -168,8 +168,8 @@ class Statistics:
 
             self.expert_term_by_user = Counter(user_per_expert_term)
             self.occurrence_expert_term = Counter(occurrence_expert_term)
-        print("RESULT: Expert terms mentioned in messages: ",self.occurrence_expert_term)
-        print("RESULT: User mentioned expert term how many times: ", self.expert_term_by_user)
+        #print("RESULT: Expert terms mentioned in messages: ",self.occurrence_expert_term)
+        #print("RESULT: User mentioned expert term how many times: ", self.expert_term_by_user)
         return self.occurrence_expert_term, self.expert_term_by_user
 
     def get_service_usage(self, sub_parent):
@@ -199,7 +199,6 @@ class Statistics:
         #print("RESULT: Language of messages: "+ str(self.text_language))
         return self.text_language
 
-
     def get_topic(self, sub_parent):
         topics_in_messages = []
         for a in sub_parent.get("Messages"):
@@ -228,3 +227,11 @@ class Statistics:
                 self.pos = Counter(pos_in_messages).most_common(10)
         #print("RESULT: most common words with POS in messages: "+ str(self.pos))
         return self.pos
+
+    def get_clusterable_words(self, topic_sub_parent):
+        topic_list = topic_sub_parent['children']
+        clusterable_words_in_topic = []
+        for item in topic_list:
+            clusterable_words_in_topic.append(item['name'])
+        self.topic_keywords = clusterable_words_in_topic
+        return self.topic_keywords

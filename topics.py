@@ -15,7 +15,7 @@ def load_expert_terms(filename):
    expert_terms = ""
    for line in data:
       expert_terms = expert_terms+" "+line.rstrip('\n')
-   print(expert_terms)
+   print("INFO: Expert terms in use: " + expert_terms)
    f.close()
    return expert_terms
 
