@@ -130,12 +130,12 @@ def train_topic_model(wordcloud_path, number_topics, model_path, preprocessed_pa
                                         stop_words='english',
                                         lowercase=True,
                                         token_pattern=r'\b[a-zA-Z]{3,}\b',
-                                        max_df=0.5,
-                                        min_df=10)
+                                        max_df=1.0,
+                                        min_df=3)
         dtm_tf = tf_vectorizer.fit_transform(new_data)
         vocab = tf_vectorizer.get_feature_names()
         #print(dtm_tf.shape)
-        lda_model = LatentDirichletAllocation(n_topics=number_topics, random_state=0)
+        lda_model = LatentDirichletAllocation(n_topics=number_topics, random_state=0, max_iter=50, max_doc_update_iter=500)
         lda_model.fit(dtm_tf)
     else:
         print("INFO: tfidf in use")
@@ -143,13 +143,13 @@ def train_topic_model(wordcloud_path, number_topics, model_path, preprocessed_pa
                                         stop_words='english',
                                         lowercase=True,
                                         token_pattern=r'\b[a-zA-Z]{3,}\b',
-                                        max_df=0.5,
-                                        min_df=10)
+                                        max_df=1.0,
+                                        min_df=3)
         tf_vectorizer = TfidfVectorizer(**tf_vectorizer_init.get_params())
         dtm_tf = tf_vectorizer.fit_transform(new_data)
         vocab = tf_vectorizer.get_feature_names()
         #print(dtm_tf.shape)
-        lda_model = LatentDirichletAllocation(n_topics=number_topics, random_state=0)
+        lda_model = LatentDirichletAllocation(n_topics=number_topics, random_state=0, max_iter=50, max_doc_update_iter=500)
         lda_model.fit(dtm_tf)
 
     pickle.dump(lda_model, open(model_path, 'wb'))
@@ -189,8 +189,8 @@ def test_topic_model(model_path, query_words, filename, out, preprocessed, test_
                                     stop_words='english',
                                     lowercase=True,
                                     token_pattern=r'\b[a-zA-Z]{3,}\b',
-                                    max_df=0.5,
-                                    min_df=10)
+                                    max_df=1.0,
+                                    min_df=3)
     # tf_vectorizer = TfidfVectorizer(**tf_vectorizer.get_params())  # uncomment if tfidf to be used
     dtm_tf = tf_vectorizer.fit_transform(new_texts)
     model.fit(dtm_tf)
