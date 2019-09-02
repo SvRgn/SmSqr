@@ -118,7 +118,7 @@ To run the topic modeling code the following arguments have to be set:
 - '--test_data' or -t path to the data file with messages to be tested to an existing topic model.
 - '--cluster_mode' or -c do we want to 'train' a new model or 'test' new data to an existing model.
 - '--topics' or -to the number of topics to be created while training.
-- '--tfidf' or -i set to true if ftidf is supposed to be used
+- '--tfidf' or -i set to true if ftidf is supposed to be used (tfidf is not commonly used for LDA topic modelling)
 - '--word_type' or t to set if only verbs, nouns, adjectives, words with hashtags or complete (only words) are considered
 in the topics. For complete leave the argument empty.
 - '--output_folder' or -o the name of the output folder for the results.
@@ -170,6 +170,35 @@ __Keep in mind:__ the pre-processing has to be done in advance for both datasets
 directly in the output folder.
 
 
+### Topic Modeling parameter
+In the file 'lda_tm_sklearn.py' one can play with the parameters of topic modeling. For training see function 'train_topic_model', for testing see the 'test_topic_model' function.
+In the call of the CountVectorizer or LatentDirichletAllocation values of parameters for topic modeling can be set.
+
+__Recommended values for Sklearn's CountVectorizer parameters:__
+
+    max_df = 1.0 (float)
+    min_df = 3 or 4 (int)
+
+Please see the following link for the definitions of the parameters:
+https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
+
+The values recommended are suitable to the nature of the data.
+-'max_df' does not seem to affect the results, however keeping it to 1.0 would be preferred
+-'min_df' of a value higher than 4 could result in our less frequent yet important terms such as 'langenachtdermuseen' to not appear in clusters.
+-'min_df' of a value less than 3 would lead to little or no pruning of very less frequent terms. This could cause our important terms such as 'langenachtdermuseen' to have a lower weightage in the clustering process. Hence 'min_df = 3 or 4' would be an ideal balance.
+
+__Recommended values for Sklearn's LatentDirichletAllocation parameters:__
+
+    max_iter = 50
+    max_doc_update_iter = 500
+
+Please see the following link for the definitions of the parameters:
+https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html
+
+The values recommended are suitable to the nature of the data.
+-'max_doc_update_iter' of a value in the range of 500 to 1000 may give a better result, however the processing time would be higher. Setting the 'learning_method' parameter to 'online' could help speed up the process.
+
+
 ### Expert Terms ###
 Expert terms is a domain-specific vocabulary that is evaluated contemplated and in addition to the query term.
 The expert term is a term (e.g Hammabot) that appears in the messages that have been queried with the
@@ -205,7 +234,14 @@ For the visualisation of the resulting topics three options are given:
 - a wordcloud visualisation has been created, see word_cloud_<data filename>.pdf
 - to see an interactive bubble representation of the topics, see 'index.html' in the 'output' folder (adapt the filename
 to the corresponding word_cloud_<input filename>.json in line 39 of the file)
-- pyVizLDA, open LDA_visualisation.html from the output folder in a browser
+- pyLDAvis, open LDA_visualisation.html from the output folder in a browser
+
+__Adjusting the relevance metric (λ) after opening 'LDA_visualisation.html':__ 
+The ideal value:
+λ=0.6
+
+-λ of a value smaller than 0.6 will bring up less frequent or special words belonging to the cluster, which may be suitable to catch words such as 'langenachtdermuseen'.
+-λ of a value greater than 0.6 will bring up the more frequent words that belong to the cluster.
 
 To view the results in more detail plots can be created of the statistic files.
 To create the plots of the two statistic files the two 'display_period_statistics.py' and
