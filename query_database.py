@@ -64,9 +64,9 @@ def query_db_by_timespan_with_filewrite(since, until, to_file):
     db_data_result = []
     for message in data:
         db_data.write(
-            str(message[0]) + '; ' + str(message[1]) + '; ' + 'hamburg' + ' ; ;"' + str(message[2]).rstrip("\n") + '"; ' + str(
+            str(message[0]) + '; ' + str(message[1]) + '; ' + 'hamburg' + ' ; ;"' + str(message[2]).rstrip("\n").replace(";", ":") + '"; ' + str(
                 message[3]) + '\n')
-        db_data_result.append(str(message[0]) + ';' + str(message[1]) + ';' + 'hamburg' + ';"' + str(message[2]).rstrip("\n") + '";' + str(
+        db_data_result.append(str(message[0]) + ';' + str(message[1]) + ';' + 'hamburg' + ';"' + str(message[2]).rstrip("\n").replace(";", ":") + '";' + str(
                 message[3]))
     db_data.close()
     return db_data_result
