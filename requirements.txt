@@ -73,7 +73,7 @@ opencv-contrib-python==3.4.2.17
 panda==0.3.1
 pandas==0.22.0
 pbr==2.1.0
-Pillow==5.1.0
+Pillow==8.1.1
 plac==0.9.6
 pluggy==0.8.1
 polyglot==16.7.4
