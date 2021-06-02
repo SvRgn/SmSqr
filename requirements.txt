@@ -128,7 +128,7 @@ twitter-text-python==1.1.1
 twokenize==1.0.0
 ujson==1.35
 Unidecode==1.0.23
-urllib3==1.23
+urllib3==1.26.5
 vaderSentiment==3.2.1
 wasabi==0.2.1
 wcwidth==0.1.7
