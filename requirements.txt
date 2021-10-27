@@ -21,7 +21,7 @@ cssselect==1.0.3
 cycler==0.10.0
 cymem==2.0.2
 cytoolz==0.9.0.1
-dask==0.18.1
+dask==2021.10.0
 de-core-news-sm==2.1.0
 decorator==4.3.0
 dill==0.2.9
