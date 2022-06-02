@@ -41,7 +41,7 @@ googletrans==2.4.0
 graphviz==0.8.4
 grpcio==1.11.0
 h5py==2.8.0
-html5lib==0.9999999
+html5lib==0.99999999
 idna==2.7
 ijson==2.3
 imageio==2.5.0
